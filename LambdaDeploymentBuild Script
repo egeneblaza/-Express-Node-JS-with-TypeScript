@@ -1,0 +1,20 @@
+
+# 1. Clean old build
+Remove-Item -Recurse -Force dist, build, lambda-package.zip -ErrorAction SilentlyContinue
+
+# 2. Install all dependencies (including dev for build)
+npm ci
+
+# 3. Build TypeScript
+npx tsc
+
+# 4. Reinstall only production dependencies
+npm ci --omit=dev
+
+# Powershell 
+# 5. Prepare build folder
+New-Item -ItemType Directory -Path build -Force
+Copy-Item -Recurse dist, node_modules, package.json -Destination build
+
+# 6. Zip for Lambda
+Compress-Archive -Path .\build\* -DestinationPath .\lambda-package.zip -Force
